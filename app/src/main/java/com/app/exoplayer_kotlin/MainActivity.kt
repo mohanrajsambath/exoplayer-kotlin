@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dataSourceFactory: DataSource.Factory
 
     private var fullscreenDialog: Dialog? = null
-    private var fullscreenDialogIcon: ImageView? = null
     private var currentWindow = 0
     private var playbackPosition: Long = 0
     private var isFullscreen = false
@@ -129,7 +127,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFullScreenButton(){
-        fullscreenDialogIcon = findViewById(R.id.exo_fullscreen_icon)
         exo_fullscreen_button.setOnClickListener {
             if (!isFullscreen) {
                 openFullscreenDialog()
@@ -143,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         (player_view.parent as ViewGroup).removeView(player_view)
         fullscreenDialog?.addContentView(player_view, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        fullscreenDialogIcon?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
+        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
         isFullscreen = true
         fullscreenDialog?.show()
     }
@@ -152,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
         (player_view.parent as ViewGroup).removeView(player_view)
         (main_media_frame as FrameLayout).addView(player_view)
-        fullscreenDialogIcon?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_expand))
+        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_expand))
         isFullscreen = false
         fullscreenDialog?.dismiss()
     }
