@@ -1,26 +1,35 @@
 package com.app.exoplayer_kotlin
 
+import android.app.Dialog
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
-    const val HLS_STATIC_URL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
-    const val STATE_RESUME_WINDOW = "resumeWindow"
-    const val STATE_RESUME_POSITION = "resumePosition"
-    const val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
-    const val STATE_PLAYER_PLAYING = "playerOnPlay"
+const val HLS_STATIC_URL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
+const val STATE_RESUME_WINDOW = "resumeWindow"
+const val STATE_RESUME_POSITION = "resumePosition"
+const val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
+const val STATE_PLAYER_PLAYING = "playerOnPlay"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var dataSourceFactory: DataSource.Factory
 
+    private var fullscreenDialog: Dialog? = null
+    private var fullscreenDialogIcon: ImageView? = null
     private var currentWindow = 0
     private var playbackPosition: Long = 0
     private var isFullscreen = false
@@ -32,6 +41,9 @@ class MainActivity : AppCompatActivity() {
 
         dataSourceFactory = DefaultDataSourceFactory(this,
             Util.getUserAgent(this, "testapp"))
+
+        initFullScreenDialog()
+        initFullScreenButton()
 
         if (savedInstanceState != null) {
             currentWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW)
@@ -53,6 +65,9 @@ class MainActivity : AppCompatActivity() {
         }
         player_view.player = exoPlayer
 
+        if (isFullscreen) {
+            openFullscreenDialog()
+        }
     }
 
     private fun releasePlayer(){
@@ -100,5 +115,45 @@ class MainActivity : AppCompatActivity() {
             if (player_view != null) player_view.onPause()
             releasePlayer()
         }
+    }
+
+    // FULLSCREEN PART
+
+    private fun initFullScreenDialog() {
+        fullscreenDialog = object: Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+            override fun onBackPressed() {
+                if(isFullscreen) closeFullscreenDialog()
+                super.onBackPressed()
+            }
+        }
+    }
+
+    private fun initFullScreenButton(){
+        fullscreenDialogIcon = findViewById(R.id.exo_fullscreen_icon)
+        exo_fullscreen_button.setOnClickListener {
+            if (!isFullscreen) {
+                openFullscreenDialog()
+            } else {
+                closeFullscreenDialog()
+            }
+        }
+    }
+
+    private fun openFullscreenDialog(){
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        (player_view.parent as ViewGroup).removeView(player_view)
+        fullscreenDialog?.addContentView(player_view, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        fullscreenDialogIcon?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
+        isFullscreen = true
+        fullscreenDialog?.show()
+    }
+
+    private fun closeFullscreenDialog() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        (player_view.parent as ViewGroup).removeView(player_view)
+        (main_media_frame as FrameLayout).addView(player_view)
+        fullscreenDialogIcon?.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_expand))
+        isFullscreen = false
+        fullscreenDialog?.dismiss()
     }
 }
