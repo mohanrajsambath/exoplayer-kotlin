@@ -1,20 +1,25 @@
 package com.app.exoplayer_kotlin
 
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.exo_playback_control_view.*
 
-    const val HLS_STATIC_URL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
-    const val STATE_RESUME_WINDOW = "resumeWindow"
-    const val STATE_RESUME_POSITION = "resumePosition"
-    const val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
-    const val STATE_PLAYER_PLAYING = "playerOnPlay"
+const val HLS_STATIC_URL = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
+const val STATE_RESUME_WINDOW = "resumeWindow"
+const val STATE_RESUME_POSITION = "resumePosition"
+const val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
+const val STATE_PLAYER_PLAYING = "playerOnPlay"
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         dataSourceFactory = DefaultDataSourceFactory(this,
             Util.getUserAgent(this, "testapp"))
+
+        initFullScreenButton()
 
         if (savedInstanceState != null) {
             currentWindow = savedInstanceState.getInt(STATE_RESUME_WINDOW)
@@ -53,6 +60,9 @@ class MainActivity : AppCompatActivity() {
         }
         player_view.player = exoPlayer
 
+        if (isFullscreen) {
+            openFullscreen()
+        }
     }
 
     private fun releasePlayer(){
@@ -100,5 +110,58 @@ class MainActivity : AppCompatActivity() {
             if (player_view != null) player_view.onPause()
             releasePlayer()
         }
+    }
+
+    override fun onBackPressed() {
+        if(isFullscreen){
+            closeFullscreen()
+            return
+        }
+        super.onBackPressed()
+    }
+
+    // FULLSCREEN PART
+
+    private fun initFullScreenButton(){
+        exo_fullscreen_button.setOnClickListener {
+            if (!isFullscreen) {
+                openFullscreen()
+            } else {
+                closeFullscreen()
+            }
+        }
+    }
+
+    private fun openFullscreen(){
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
+        player_view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorBlack))
+        val params: LinearLayout.LayoutParams = player_view.layoutParams as LinearLayout.LayoutParams
+        params.width = LinearLayout.LayoutParams.MATCH_PARENT
+        params.height = LinearLayout.LayoutParams.MATCH_PARENT
+        player_view.layoutParams = params
+        supportActionBar?.hide()
+        hideSystemUi()
+        isFullscreen = true
+    }
+
+    private fun closeFullscreen() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_expand))
+        player_view.setBackgroundColor(ContextCompat.getColor(this, R.color.colorWhite))
+        val params: LinearLayout.LayoutParams = player_view.layoutParams as LinearLayout.LayoutParams
+        params.width = LinearLayout.LayoutParams.MATCH_PARENT
+        params.height = 0
+        player_view.layoutParams = params
+        supportActionBar?.show()
+        player_view.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+        isFullscreen = false
+    }
+
+    private fun hideSystemUi() {
+        player_view?.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 }
