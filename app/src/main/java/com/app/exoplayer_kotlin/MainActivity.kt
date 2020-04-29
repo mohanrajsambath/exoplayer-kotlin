@@ -1,5 +1,6 @@
 package com.app.exoplayer_kotlin
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -136,11 +137,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openFullscreenDialog(){
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun openFullscreenDialog() {
+        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         (player_view.parent as ViewGroup).removeView(player_view)
         fullscreenDialog?.addContentView(player_view, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        exo_fullscreen_icon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_fullscreen_shrink))
         isFullscreen = true
         fullscreenDialog?.show()
     }
