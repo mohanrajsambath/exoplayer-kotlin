@@ -1,6 +1,6 @@
 # Exoplayer-kotlin
 
-Example of Exoplayer v2.11.1 in Kotlin
+Example of Exoplayer v2.11.4 in Kotlin
 
 This example is for HLS video
 
