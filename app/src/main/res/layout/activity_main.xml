@@ -2,31 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/main_media_frame"
+    <com.app.exoplayer_kotlin.ExoplayerRecyclerView
+        android:id="@+id/rv_videos"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:background="#000000">
-
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/player_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center" />
-
-    </FrameLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:background="#757575"
-        android:gravity="center"
-        android:text="Nothing"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp" />
+        tools:listitem="@layout/item_video"
+        />
 
 </LinearLayout>
