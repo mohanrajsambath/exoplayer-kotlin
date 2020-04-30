@@ -2,7 +2,9 @@
 
 Example of Exoplayer v2.11.4 in Kotlin
 
-This example is for HLS video
+This example is for HLS video in a recyclerview
+
+Added and forked from [this repo](https://github.com/mitchtabian/Video-Player-RecyclerView)
 
 # Project branch
 
