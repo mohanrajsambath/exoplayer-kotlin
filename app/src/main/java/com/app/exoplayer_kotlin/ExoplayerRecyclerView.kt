@@ -51,7 +51,7 @@ class ExoplayerRecyclerView : RecyclerView {
         videoSurfaceView.useController = false
         videoSurfaceView.player = videoPlayer
         videoPlayer?.volume = 0f
-//        videoPlayer?.repeatMode = Player.REPEAT_MODE_ONE
+        videoPlayer?.repeatMode = Player.REPEAT_MODE_ONE
 
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -88,9 +88,6 @@ class ExoplayerRecyclerView : RecyclerView {
                         if (!isVideoViewAdded) {
                             addVideoView()
                         }
-                    }
-                    Player.STATE_ENDED -> {
-                        videoPlayer?.seekTo(0)
                     }
                     else -> {}
                 }
@@ -165,7 +162,13 @@ class ExoplayerRecyclerView : RecyclerView {
             videoPlayer?.release()
             videoPlayer = null
         }
+        resetVideoView()
         viewHolderParent = null
     }
 
+    fun createPlayer() {
+        if(videoPlayer == null) {
+            init(context)
+        }
+    }
 }

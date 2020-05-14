@@ -25,9 +25,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    override fun onResume() {
+        if(::recyclerView.isInitialized) recyclerView.createPlayer()
+        super.onResume()
+    }
+
     override fun onStop() {
+        if(::recyclerView.isInitialized) recyclerView.releasePlayer()
         super.onStop()
-        recyclerView.releasePlayer()
     }
 }
 
